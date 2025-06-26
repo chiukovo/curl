@@ -570,7 +570,21 @@ class Builder {
             fclose($file);
         } else if( $this->packageOptions[ 'asJsonResponse' ] ) {
             // Decode the request if necessary
-            $response = json_decode($response, $this->packageOptions[ 'returnAsArray' ]);
+            $decoded = json_decode($response, $this->packageOptions[ 'returnAsArray' ]);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                // JSON decode 失敗，回傳 http code 與簡化 error message
+                $httpCode = isset($responseData['http_code']) ? $responseData['http_code'] : 0;
+                $errorMsg = 'JSON decode error: ' . json_last_error_msg();
+                $shortMsg = mb_substr($response, 0, 500);
+                return [
+                    'http_code' => $httpCode,
+                    'error' => $errorMsg,
+                    'response_excerpt' => $shortMsg
+                ];
+            }
+
+            $response = $decoded;
         }
 
         if( $this->packageOptions[ 'enableDebug' ] ) {
