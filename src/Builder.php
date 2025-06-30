@@ -552,10 +552,9 @@ class Builder {
         }
 
         // Capture additional request information if needed
-        $responseData = array();
-        if( $this->packageOptions[ 'responseObject' ] || $this->packageOptions[ 'responseArray' ] ) {
-            $responseData = curl_getinfo( $this->curlObject );
+        $responseData = curl_getinfo( $this->curlObject );
 
+        if( $this->packageOptions[ 'responseObject' ] || $this->packageOptions[ 'responseArray' ] ) {
             if( curl_errno($this->curlObject) ) {
                 $responseData[ 'errorMessage' ] = curl_error($this->curlObject);
             }
